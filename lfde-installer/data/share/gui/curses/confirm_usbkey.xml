@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="root_confirm_usb">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">18</property>
+    <property name="width">77</property>
+    <property name="border">false</property>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">0</property>
+        <property name="height">3</property>
+        <property name="width">77</property>
+        <property name="text">Please ensure you have the correct USB key.  All the contents will be formatted so it is important that you get the correct device.</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">4</property>
+        <property name="height">3</property>
+        <property name="width">77</property>
+        <property name="text">To assist in identifying the USB key you have chosen, this program can perform some non-destructive read operations to the drive.  If your USB key has a read/write light, you should see it light up.</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Button" id="btn_test_read">
+        <property name="x">0</property>
+        <property name="y">9</property>
+        <property name="height">1</property>
+        <property name="width">25</property>
+        <property name="text">Test Read</property>
+        <property name="z_index">100</property>
+        <signal name="clicked" handler="on_btn_test_read_clicked"/>
+      </object>
+    </child>
+
+    <child>
+      <object class="ProgressBar" id="prg_test_read">
+        <property name="x">0</property>
+        <property name="y">16</property>
+        <property name="height">1</property>
+        <property name="width">40</property>
+        <property name="numeric">False</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="CheckBox" id="chk_confirm_drive">
+        <property name="x">0</property>
+        <property name="y">12</property>
+        <property name="height">1</property>
+        <property name="width">40</property>
+        <property name="text">Yes, this is the correct drive.</property>
+        <signal name="toggled" handler="on_chk_confirm_drive_toggled"/>
+        <property name="z_index">99</property>
+      </object>
+    </child>
+
+  </object>
+</interface>

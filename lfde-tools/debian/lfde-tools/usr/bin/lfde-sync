@@ -1,0 +1,89 @@
+#!/usr/bin/python2.6
+
+import os
+import sys
+import os.path
+import subprocess
+import xml.dom.minidom
+import distutils.dir_util
+
+class LfdeSync:
+    def __init__(self):
+        self.mountpoint = "/media/usbkey"
+
+    def run(self):
+        dom = xml.dom.minidom.parse("/etc/lfde/config.xml")
+
+        # check to see that we're using a USB key
+        boot_scheme = dom.getElementsByTagName("bootscheme")[0].firstChild.nodeValue
+
+        if boot_scheme == "hdd":
+            sys.exit(0)
+
+
+        while self.disk_exists() == False:
+            print "Please insert your LFDE USB key"
+            os.sleep(1)
+
+        if self.is_mounted() == False:
+            self.mount_usbkey()         
+        self.sync()
+        self.unmount_usbkey()
+
+    def disk_exists(self):
+        if os.path.exists("/dev/disk/by-label/usbkey"):
+            return True
+
+        return False
+
+    def is_mounted(self):
+        mounts_fh = open("/proc/mounts", "r")
+
+        while True:
+            line = mounts_fh.readline()
+            if not line:
+                break
+
+            fields = line.split()
+            device = fields[0]
+            mountpoint = fields[1]
+
+            try:
+                if os.path.samefile("/dev/disk/by-label/usbkey", device) and \
+                        os.path.samefile(self.mountpoint, mountpoint):
+                    mounts_fh.close()
+                    return True
+            except OSError, ex:
+                pass
+
+        mounts_fh.close()
+        return False
+
+    def mount_usbkey(self):
+
+        if os.path.exists(self.mountpoint) == False:
+            os.makedirs(self.mountpoint)
+
+        retcode = subprocess.call(["mount", "/dev/disk/by-label/usbkey", \
+                "/media/usbkey"])
+
+        if retcode != 0:
+            print "Could not mount USB key"
+            sys.exit(1)
+
+
+    def unmount_usbkey(self):
+
+        retcode = subprocess.call(["umount", "/dev/disk/by-label/usbkey"])
+
+        if retcode != 0:
+            print "Could not unmount USB key"
+            sys.exit(1)
+
+    def sync(self):
+        distutils.dir_util.copy_tree("/boot", self.mountpoint)
+
+
+if __name__ == "__main__":
+    ls = LfdeSync()
+    ls.run()

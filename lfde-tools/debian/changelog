@@ -1,0 +1,21 @@
+lfde-tools (0.3.0) unstable; urgency=low
+
+  * Fixed a bug that made some installations fail due to boot devices not
+  getting synced properly
+  * Updated to work with Ubuntu Maverick
+  * Introduced a new grub config so multiple systems can be supported from the
+  one usb key
+
+ -- Mark Knowles <mark@lfde.org>  Mon, 11 Oct 2010 21:44:58 +1000
+
+lfde-tools (0.2.1) unstable; urgency=low
+
+  * Fixed a bug that prevented lfde-sync from prompting for a USB key 
+
+ -- Mark Knowles <mark@lfde.org>  Thu, 10 Sep 2010 18:21:58 +1000
+
+lfde-tools (0.2) unstable; urgency=low
+
+  * Initial packaged release.
+
+ -- Mark Knowles <mark@lfde.org>  Thu, 02 Sep 2010 18:21:58 +1000

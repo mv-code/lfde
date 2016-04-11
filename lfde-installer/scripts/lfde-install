@@ -1,0 +1,219 @@
+#!/usr/bin/python2.6
+#
+# LFDE - Linux Full Disk Encryption
+# A program to set up true full disk encryption with USB key authentication
+# Copyright (C) 2010 Mark Knowles <mark@lfde.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2, as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# 
+
+import os
+import sys
+import getopt
+import shutil
+import socket
+import datetime
+import tempfile
+
+from lfde.Backend import Backend
+from lfde.Choices import Choices
+try:
+    from lfde.frontends.GtkFrontend import GtkFrontend
+except ImportError:
+    pass
+    
+from lfde.frontends.CursesFrontend import CursesFrontend
+
+class Logger:
+    def __init__(self, path=None, stdout_enabled=False):
+        self.stdout_enabled = stdout_enabled
+        self.path = path
+
+        if path == None:
+            log_fd, self.path = tempfile.mkstemp(dir="/tmp", prefix="lfde_std.log")
+            self.log_fh = os.fdopen(log_fd, "w")
+        else:
+            self.log_fh = open(path, "w")
+
+        self.old_stdout = sys.stdout
+        self.old_stderr = sys.stderr
+
+        # some routines use this directly (e.g. subprocess)
+        self.fileno = self.log_fh.fileno
+
+        # we redirect stdout and stderr to a file so we
+        # can generate debug reports and also capture output
+        # from the various subprocesses
+        sys.stdout = self
+        sys.stderr = self
+
+
+    def write(self, buffer):
+        self.log_fh.write(buffer)
+        self.log_fh.flush()
+        if self.stdout_enabled == True:
+            self.old_stdout.write(buffer)
+            self.old_stdout.flush()
+
+    def writeln(self, buffer):
+        self.write(buffer + "\n")
+
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        sys.stderr = self.old_stderr
+        sys.stdout = self.old_stdout
+
+        self.log_fh.close()
+
+
+ 
+class Main:
+    def usage(self):
+        self.stderr.write("sudo lfde [--debug]\n")
+
+    def run(self):
+        debug = False
+        logfile = None
+        frontends = {}
+        x_available = False
+
+        try:
+            frontends["gtk"] = GtkFrontend
+            x_available = True
+        except NameError:
+            pass
+        frontends["curses"] = CursesFrontend
+
+        frontend_name = None
+
+        # get command line options
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], "", ["debug", "frontend=", "logfile="])
+
+        except getopt.GetoptError, err:
+            self.usage()
+            sys.exit(1)
+
+        for opt, arg in opts:
+            # day mode.  this burns off a day, specified by the YYYYMMDD
+            # option on the command line
+            if opt == '--debug':
+                debug = True
+            elif opt == '--frontend':
+                frontend_name = arg
+            elif opt == '--logfile':
+                logfile = arg
+
+        # we can't use debug mode with curses as the writing to stdout
+        # kills curses
+        if debug == True and frontend_name == "curses":
+            sys.stderr.write("You cannot use --debug mode when using curses\n")
+            sys.stderr.write("All debugging information will be placed in a file.\n")
+            sys.stderr.write("You can specify the filename by using the --logfile= argument\n")
+            sys.exit(1)
+
+        self.redirect_output(logfile, debug)
+
+        # create the config object that will contain all the users selections
+        self.choices = Choices()
+
+        # set a few choices automatically
+        self.choices.hostname = socket.gethostname()
+
+        # get the users full name
+        #mark:x:1000:1000:Mark Knowles,,,:/home/mark:/bin/bash
+        self.choices.username = os.environ["SUDO_USER"]
+        passwd_fh = open("/etc/passwd", "r")
+        while True:
+            line = passwd_fh.readline()
+
+            if not line:
+                break
+
+            fields = line.split(":")
+
+            if fields[0] == self.choices.username:
+                desc_fields = fields[4].split(",")
+                full_name = desc_fields[0]
+                break
+
+        passwd_fh.close()
+
+        self.choices.email = self.choices.username + "@" + self.choices.hostname
+        self.choices.gpg_name = full_name
+
+        # find the distro name
+        supported_distros = ["fedora", "ubuntu"]
+
+        self.choices.distro = DistroFinder().distro_name()
+        print "Detected distro: " + self.choices.distro
+        if self.choices.distro not in supported_distros:
+            sys.stderr.write("Unsupported distribution: " + self.choices.distro)
+            sys.exit(1)
+
+
+        # also set the default gpg key expiry
+        self.choices.gpg_key_expiry_date = datetime.datetime.now() + datetime.timedelta(days=365*5)
+
+        self.backend = Backend(self)
+        if frontend_name == None:
+            if x_available == True:
+                frontend_name = "gtk"
+            else:
+                frontend_name = "curses"
+
+        self.frontend = frontends[frontend_name](self.choices, self.backend)
+        self.frontend.gui_main_loop()
+
+        self.undirect_output()
+
+    def redirect_output(self, logfile, debug):
+        self.logger = Logger(path=logfile, stdout_enabled=debug)
+
+        #print "Temporary log file: " + self.logger.get_path()
+
+
+    def close_log(self):
+        # print a few more things into the log:
+        print "User choices (excluding confidential information):"
+        print "  USB key device:    " + self.choices.usb_key_device
+        print "  USB key partition: " + self.choices.usb_key_partition
+        print "  Filesystem type:   " + self.choices.fs_type
+        print "  GPG key type:      " + self.choices.gpg_key_type
+        print "  GPG sub key type:  " + self.choices.gpg_sub_key_type
+        print "  GPG key length:    " + str(self.choices.gpg_key_length)
+        print "  Mountpoint:        " + self.choices.mountpoint
+        print "  Boot scheme:       " + self.choices.boot_scheme
+        print "End user choices"
+
+
+    def undirect_output(self):
+        self.logger.close()
+
+        # copy the log file to the USB key
+        if self.choices.mountpoint != None:
+            shutil.copy(self.logger.path, os.path.join(self.choices.mountpoint, "lfde_installer_log.txt"))
+
+
+if __name__ == "__main__":
+    if "SUDO_USER" in os.environ:
+
+        main = Main()
+        main.run()
+
+    else:
+        print "Please run this as root via the sudo command (i.e. not the su - command)"
+        sys.exit(1)

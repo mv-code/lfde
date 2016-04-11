@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="root_commit">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">18</property>
+    <property name="width">77</property>
+    <property name="border">false</property>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">0</property>
+        <property name="height">1</property>
+        <property name="width">77</property>
+        <property name="text">Your system is now ready to be installed.</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">2</property>
+        <property name="height">1</property>
+        <property name="width">12</property>
+        <property name="text">Task</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">50</property>
+        <property name="y">2</property>
+        <property name="height">1</property>
+        <property name="width">12</property>
+        <property name="text">Status</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="ProgressBar" id="prg_tasks">
+        <property name="x">0</property>
+        <property name="y">16</property>
+        <property name="height">1</property>
+        <property name="width">77</property>
+        <property name="numeric">True</property>
+      </object>
+    </child>
+
+
+  </object>
+</interface>

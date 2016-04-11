@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="win_main">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">23</property>
+    <property name="width">79</property>
+    <property name="border">true</property>
+
+    <child>
+      <object class="Label" id="lbl_step_title">
+        <property name="x">1</property>
+        <property name="y">1</property>
+        <property name="height">1</property>
+        <property name="width">40</property>
+        <property name="border">true</property>
+        <property name="text">Title</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="HLine">
+        <property name="x">1</property>
+        <property name="y">2</property>
+        <property name="width">77</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Notebook" id="steps">
+        <property name="x">1</property>
+        <property name="y">3</property>
+        <property name="height">18</property>
+        <property name="width">76</property>
+        <property name="border">false</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label" id="lbl_step">
+        <property name="x">1</property>
+        <property name="y">21</property>
+        <property name="height">1</property>
+        <property name="width">25</property>
+        <property name="border">true</property>
+        <property name="text">Step i of j</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Button" id="btn_quit">
+        <property name="x">30</property>
+        <property name="y">21</property>
+        <property name="height">1</property>
+        <property name="width">10</property>
+        <property name="text">Quit</property>
+        <property name="z_index">0</property>
+        <signal name="clicked" handler="on_btn_quit_clicked"/>
+      </object>
+    </child>
+    <child>
+      <object class="Button" id="btn_back">
+        <property name="x">45</property>
+        <property name="y">21</property>
+        <property name="height">1</property>
+        <property name="width">10</property>
+        <property name="text">Back</property>
+        <property name="z_index">1</property>
+        <signal name="clicked" handler="on_btn_back_clicked"/>
+      </object>
+    </child>
+
+    <child>
+      <object class="Button" id="btn_forward">
+        <property name="x">60</property>
+        <property name="y">21</property>
+        <property name="height">1</property>
+        <property name="width">12</property>
+        <property name="text">Forward</property>
+        <property name="z_index">2</property>
+        <!--property name="border">True</property-->
+        <signal name="clicked" handler="on_btn_forward_clicked"/>
+      </object>
+    </child>
+
+  </object>
+</interface>

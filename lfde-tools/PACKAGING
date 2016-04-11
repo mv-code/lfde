@@ -1,0 +1,9 @@
+Packaged as per the guide at:
+
+http://ghantoos.org/2008/10/19/creating-a-deb-package-from-a-python-setuppy/
+
+And then run dpkg-buildpackage
+
+Mount to the repo using the command:
+
+sshfs mark@10.0.4.1:scm scm -o uid=1000

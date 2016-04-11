@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="window1">
+    <child>
+      <object class="GtkVBox" id="root_confirm_usbkey">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="label1">
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="xpad">4</property>
+            <property name="label" translatable="yes">Please ensure you have the correct USB key.  All the contents will be formatted so it is important that you get the correct device.</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkTable" id="table1">
+            <property name="visible">True</property>
+            <property name="n_columns">2</property>
+            <child>
+              <object class="GtkLabel" id="label2">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="xpad">4</property>
+                <property name="label" translatable="yes">To assist in identifying the USB key you have chosen, this program can perform some non-destructive read operations to the drive.  If your USB key has a read/write light, you should see it light up.</property>
+                <property name="wrap">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox1">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">3</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkHButtonBox" id="hbuttonbox1">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkToggleButton" id="btn_test_read">
+                        <property name="label" translatable="yes">Test Read</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <signal name="toggled" handler="on_btn_test_read_toggled"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkAlignment" id="alignment1">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkProgressBar" id="prg_test_read">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="chk_confirm_drive">
+            <property name="label" translatable="yes">Yes, this is the correct drive.</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="draw_indicator">True</property>
+            <signal name="toggled" handler="on_chk_confirm_drive_toggled"/>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

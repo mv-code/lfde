@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="window1">
+    <child>
+      <object class="GtkVBox" id="root_finish">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="lbl_congratulations">
+            <property name="width_request">600</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="xalign">0</property>
+            <property name="yalign">0</property>
+            <property name="ypad">6</property>
+            <property name="label" translatable="yes">&lt;b&gt;Congratulations!  LFDE has been installed to your USB drive and system!&lt;/b&gt;
+
+&lt;b&gt;&lt;i&gt;Important:&lt;/i&gt;&lt;/b&gt;  Please configure your BIOS to boot from your USB key.
+
+A debugging file has been saved on your USB key root called lfde_install_log.txt.  If your system becomes unoperational or will not boot, please submit this file to the LFDE forums at &lt;a href="http://lfde.org/help"&gt;http://lfde.org/help&lt;/a&gt;
+
+It is recommended that you copy the following log file to another computer (e.g. email it to yourself) in case you need to debug a failure:</property>
+            <property name="use_markup">True</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="txt_log_path">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="editable">False</property>
+            <property name="invisible_char">&#x25CF;</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

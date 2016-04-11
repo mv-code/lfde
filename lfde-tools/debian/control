@@ -1,0 +1,14 @@
+Source: lfde-tools
+Section: unknown
+Priority: optional
+Maintainer: Mark Knowles <mark@lfde.org>
+Build-Depends: cdbs, debhelper, python-support
+Homepage: https://lfde.org
+Standards-Version: 3.8.4.0
+
+Package: lfde-tools
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, consoul
+Homepage: https://lfde.org
+Description: LFDE Tools
+

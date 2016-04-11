@@ -1,0 +1,14 @@
+Source: lfde-installer
+Section: unknown
+Priority: optional
+Maintainer: Mark Knowles <mark@lfde.org>
+Build-Depends: cdbs, debhelper, python-support
+Homepage: https://lfde.org
+Standards-Version: 3.8.4.0
+
+Package: lfde-installer
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, consoul, lfde-tools
+Homepage: https://lfde.org
+Description: LFDE Installer
+

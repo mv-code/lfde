@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <title>lfde.org</title>
+    <link rel="stylesheet" type="text/css" href="./css/master.css">
+  </head>
+  <body>
+
+<p><a href="index.html">Home</a></p>
+
+
+<h1>Getting Started With Version 0.3</h1>
+
+Installing LFDE has become a lot easier with the introduction of a GUI based installer.
+Release Notes
+
+This initial release comes with a few caveats and we're working on them:
+
+<ul>
+  <li>Version 0.3 is compatible with Ubuntu Lucid (10.04) and Maverick (10.10)</li>
+  <li>You can only use one USB key per system (this will change with the next release)</li>
+</ul>
+
+<h2>Install Ubuntu Alternate</h2>
+
+<p>You need to install your Ubuntu system with the alternate installer or the server installer. You can find an ISO image of the alternate installer by going to any of the Ubuntu mirrors.</p>
+
+<p>Select the alternate iso that is suitable for your system. For example:
+<ul>
+  <li>ubuntu-10.10-alternate-amd64.iso</li>
+  <li>ubuntu-10.10-alternate-i386.iso</li>
+</ul>
+
+<p>When you install your system using the alternate or server installer, choose the option to encrypt your system. The LFDE installer needs this to work.</p>
+
+<p>We use the encryption options to set up a basic encrypted system without the USB key or GPG protection. The LFDE installer needs to be run after the system is installed. It then modifies the system to boot more securely with the USB key.</p>
+<h2>Add the LFDE APT Repository</h2>
+
+<p>Add the following line to /etc/apt/sources.list depending on your version of Ubuntu:</p>
+
+<table border="1">
+<th>Version:</th>
+<th>Line:</th>
+<tr>
+  <td>Lucid Lynx (10.04):</td>
+  <td><code>deb http://lfde.org/ubuntu lucid main</code></td>
+</tr>
+
+<tr>
+  <td>Maverick Meercat (10.10):</td>
+  <td><code>deb http://lfde.org/ubuntu maverick main</code></td>
+</tr>
+</table>
+<h2>Add the LFDE GPG Key</h2>
+
+<p><code>wget http://lfde.org/gpg.asc -O - | apt-key add -</code></p>
+<h2>Update APT</h2>
+
+<p><code>sudo apt-get update</code></p>
+<h2>Install LFDE</h2>
+
+<p>Open up terminal by clicking:</p>
+<p><code>Applications -> Accessories -> Terminal</code></p>
+
+<h2>Install LFDE</h2>
+<p><code>sudo apt-get install lfde-installer</code></p>
+
+<h2>Run the installer:</h2>
+<p><code>sudo lfde-install</code></p>
+<p>Follow the steps</p>
+
+<p>Now follow the installer steps and you should hopefully end up with a USB key protected Ubuntu installation. Be sure to change your BIOS to boot from USB if you choose to boot from USB. This is the most secure way the LFDE system works.</p>
+
+
+</body>
+</html>

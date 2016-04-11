@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# if cryptsetup is not installed, then we cannot support encrypted devices.
+which cryptsetup >/dev/null 2>&1 || exit 1
+
+# hostonly checking should only return true if root is on a LUKS device
+# in some way, but I am too lazy to figure out how to do that.
+# Instead, fail if we do not have a LUKS device in use somewhere.
+
+. $dracutfunctions
+
+is_crypt() { [[ $(get_fs_type /dev/block/$1) = crypto_LUKS ]]; }
+
+[[ $1 = '-h' ]] && {
+    rootdev=$(find_root_block_device)
+    if [[ $rootdev ]]; then
+	# root lives on a block device, so we can be more precise about 
+	# hostonly checking
+	check_block_and_slaves is_crypt "$rootdev" || exit 1
+    else
+	# root is not on a block device, use the shotgun approach
+	blkid | grep -q crypto\?_LUKS || exit 1
+    fi
+}
+
+exit 0

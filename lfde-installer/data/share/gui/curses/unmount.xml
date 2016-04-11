@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="root_unmount">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">18</property>
+    <property name="width">77</property>
+    <property name="border">false</property>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">0</property>
+        <property name="height">1</property>
+        <property name="width">70</property>
+        <property name="text">The following devices need to be unmounted before continuing:</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Button" id="btn_unmount">
+        <property name="x">0</property>
+        <property name="y">15</property>
+        <property name="height">1</property>
+        <property name="width">20</property>
+        <property name="text">Unmount All</property>
+        <property name="z_index">100</property>
+        <signal name="clicked" handler="on_btn_unmount_clicked"/>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">3</property>
+        <property name="height">1</property>
+        <property name="width">10</property>
+        <property name="text">Device</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">40</property>
+        <property name="y">3</property>
+        <property name="height">1</property>
+        <property name="width">18</property>
+        <property name="text">Mount Point</property>
+      </object>
+    </child>
+
+
+    <child>
+      <object class="ListBox" id="lb_unmount">
+        <property name="x">0</property>
+        <property name="y">4</property>
+        <property name="height">5</property>
+        <property name="width">70</property>
+        <property name="column_starts">0, 40</property>
+      </object>
+    </child>
+
+
+
+  </object>
+</interface>

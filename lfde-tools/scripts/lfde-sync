@@ -1,0 +1,303 @@
+#!/usr/bin/python
+
+import re
+import os
+import sys
+import glob
+import time
+import shutil
+import socket
+import string
+import os.path
+import subprocess
+import xml.dom.minidom
+import distutils.dir_util
+
+class LfdeSync:
+
+    CONFIG_PATH = "/etc/lfde/config.xml"
+
+    def __init__(self):
+        self.mountpoint = "/media/usbkey"
+
+    def get_codename(self):
+        so, se = subprocess.Popen(["lsb_release", "-c", "-s"], \
+                stdout = subprocess.PIPE).communicate()
+
+        return string.rstrip(so)
+
+    def run(self):
+        # this is an ugly hack to hook update-initramfs on lucid
+        if len(sys.argv) > 1 and sys.argv[1] == "--wait":
+            while True:
+                if self.initramfs_running() != True:
+                    break
+
+
+        if os.path.exists(self.CONFIG_PATH) == False:
+            # we're not configured yet
+            print "LFDE is not configured yet"
+            sys.exit(0)
+
+        dom = xml.dom.minidom.parse(self.CONFIG_PATH)
+
+
+        # check to see that we're using a USB key
+        boot_scheme = dom.getElementsByTagName("bootscheme")[0].firstChild.nodeValue
+
+        if boot_scheme == "hdd":
+            sys.exit(0)
+
+
+        while self.disk_exists() == False:
+            self.ask_insert()
+            time.sleep(1)
+
+        if self.is_mounted() == False:
+            self.mount_usbkey()         
+
+        self.uuid = self.get_uuid()
+        self.sync()
+        self.unmount_usbkey()
+
+    def initramfs_running(self):
+        for pid in os.listdir("/proc"):
+            m = re.match(r'^\d+$', pid)
+            if m == None:
+                continue
+
+            try:
+                proc_fh = open(os.path.join("/proc", pid, "cmdline"))
+            except IOError:
+                continue
+
+            cmdline = proc_fh.read().split('\0')
+
+            if len(cmdline) > 1 and cmdline[1] == "/usr/sbin/update-initramfs":
+                proc_fh.close()
+                return True
+                sys.stderr.write("Found " + pid + "\n")
+    
+            proc_fh.close()
+
+        return False
+
+
+    def get_uuid(self):
+        cmd = ["tune2fs", "-l", "/dev/disk/by-label/usbkey"]
+
+        t_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        so, se = t_proc.communicate()
+
+        m = re.search(r'UUID:\s+(.*)$', so, re.MULTILINE)
+
+        return m.group(1)
+
+
+    def ask_insert(self):
+        text = "Please insert your LFDE USB key"
+        if "DISPLAY" in os.environ:
+            text += " and press OK"
+            subprocess.call(["zenity", "--info", "--text=" + text])
+        else:
+            text += " and press enter"
+            raw_input(text)
+
+
+    def disk_exists(self):
+        if os.path.exists("/dev/disk/by-label/usbkey"):
+            return True
+
+        return False
+
+    def is_mounted(self):
+        mounts_fh = open("/proc/mounts", "r")
+
+        while True:
+            line = mounts_fh.readline()
+            if not line:
+                break
+
+            fields = line.split()
+            device = fields[0]
+            mountpoint = fields[1]
+
+            try:
+                if os.path.samefile("/dev/disk/by-label/usbkey", device) and \
+                        os.path.samefile(self.mountpoint, mountpoint):
+                    mounts_fh.close()
+                    return True
+            except OSError, ex:
+                pass
+
+        mounts_fh.close()
+        return False
+
+    def mount_usbkey(self):
+
+        if os.path.exists(self.mountpoint) == False:
+            os.makedirs(self.mountpoint)
+
+        retcode = subprocess.call(["mount", "/dev/disk/by-label/usbkey", \
+                "/media/usbkey"])
+
+        if retcode != 0:
+            print "Could not mount USB key"
+            sys.exit(1)
+
+
+    def unmount_usbkey(self):
+        unmounted = False
+        for i in range(0, 10):
+            retcode = subprocess.call(["umount", "/dev/disk/by-label/usbkey"], stderr=subprocess.PIPE)
+
+            if retcode == 0:
+                unmounted = True
+                break
+            else:
+                # give slow devices time to unmount
+                time.sleep(1)
+
+        if unmounted == False:
+            print "Could not unmount USB key"
+            sys.exit(1)
+
+    def sync(self):
+
+        hostname = socket.gethostname()
+
+        # enumerate the kernel versions:
+        for kernel_file in glob.glob("/boot/vmlinuz*"):
+            m = re.search("\d+\.\d+\.\d+\-\d+\-.+", kernel_file)
+            version = m.group(0)
+
+            for item in ["vmlinuz", "System.map", "abi", "initrd.img", "vmcoreinfo"]:
+                dst = os.path.join(self.mountpoint, \
+                        item + "-" + version + "_" + hostname)
+                shutil.copy(os.path.join("/boot", item + "-" + version), dst)
+
+        #TODO: Temporarily suspended for testing
+        #self.rewrite_grub()
+
+    def rewrite_grub(self):
+
+
+        # now sort out grub.cfg
+        grub_fh = open("/boot/grub/grub.cfg", "r")
+        in_section = False
+        menu = []
+        for line in grub_fh.readlines():
+            line = string.rstrip(line)
+
+            if line == "### END /etc/grub.d/10_linux ###":
+                in_section = False
+
+            if in_section == True:
+                menu.append(line)
+
+            if line == "### BEGIN /etc/grub.d/10_linux ###":
+                in_section = True
+
+
+
+        grub_fh.close()
+
+
+        # modify the menu options to use the system specific files
+        new_menu = []
+        for line in menu:
+
+            if string.find(line, "menuentry") == 0:
+                m = re.search(r'(\d+\.\d+\.\d+\-\d+\-.\w+).*\'(.*)', line)
+
+                line = "menuentry '" + hostname + " (" + m.group(1) + ")'" + m.group(2)
+            else: 
+                line = re.sub(r'(\d+\.\d+\.\d+\-\d+\-.\w+)', r'\1_' + hostname, line)
+
+            # now replace the UUID with that of the usb key
+            m = re.search(r'(.*search --no-floppy) --fs-uuid --set', line)
+            if m != None:
+                line = m.group(1) + " --label --set usbkey"
+
+            # get rid of the set root= bit
+            m = re.search(r'set root=', line)
+            if m == None:
+                new_menu.append(line)
+
+
+        # now read in the LFDE grub config
+        before = []
+        after = []
+        in_section = 1
+        host_menu_entries = {}
+        grub_fh = open(os.path.join(self.mountpoint, "boot/grub/grub.cfg"), "r")
+        lines = []
+        for line in grub_fh.readlines():
+            line = string.rstrip(line)
+            if line == "### LFDE START":
+                before.append(line)
+                in_section = 2
+
+            if line == "### LFDE END":
+                in_section = 3
+
+            if in_section == 1:
+                before.append(line)
+            elif in_section == 2:
+                lines.append(line)
+
+                m = re.search("### START hostname=(.*)", line)
+                if m != None:
+                    in_hostname = m.group(1)
+
+                m = re.search("### END hostname=", line)
+                if m != None:
+                    host_menu_entries[in_hostname] = lines
+                    in_hostname = None
+                    lines = []
+
+            elif in_section == 3:
+                after.append(line)
+
+
+        grub_fh.close()
+
+        #new_uuid = self.uuid
+        # replace the old boot uuid with our usb key uuid
+        #new_menu = self.replace_uuid(new_menu, old_uuid, new_uuid)
+        #before = self.replace_uuid(before, "lfde-uuid", new_uuid)
+        #after = self.replace_uuid(after, "lfde-uuid", new_uuid)
+
+
+        # now write the final grub config for LFDE
+
+        grub_fh = open(os.path.join(self.mountpoint, "boot/grub/grub.cfg"), "w")
+        for line in before:
+            grub_fh.write(line + "\n")
+
+        for host in host_menu_entries.keys():
+            if host != hostname:
+                for line in host_menu_entries[host]:
+                    grub_fh.write(line + "\n")
+
+        grub_fh.write("### START hostname=" + hostname + "\n")
+        for line in new_menu:
+            grub_fh.write(line + "\n")
+        grub_fh.write("### END hostname=" + hostname + "\n")
+            
+
+        for line in after:
+            grub_fh.write(line + "\n")
+
+
+    def replace_uuid(self, lines, old_uuid, new_uuid):
+        new_lines = []
+
+        for line in lines:
+            new_lines.append(string.replace(line, old_uuid, new_uuid))
+
+        return new_lines
+
+if __name__ == "__main__":
+    ls = LfdeSync()
+    ls.run()

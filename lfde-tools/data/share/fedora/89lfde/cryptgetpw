@@ -1,0 +1,152 @@
+# LFDE - Linux Full Disk Encryption
+# A program to set up true full disk encryption with USB key authentication
+# Copyright (C) 2010 Mark Knowles <mark@lfde.org>
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2, as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# 
+#!/bin/sh
+
+# function to echo to stderr
+echoerr() {
+    if [ -n "$PLYMOUTH" ]; then
+        /bin/plymouth message --text="LFDE Error: $@"
+    fi
+    echo $@ > /dev/console
+}
+
+# gets the password from the USB key
+getpw() {
+
+    if [ ! -d $MOUNTPOINT ]; then
+        mkdir $MOUNTPOINT
+    fi
+
+    /bin/plymouth message --text="Please insert USB key"
+    /bin/plymouth pause-progress
+
+    # loop until the usb key is attached
+    while [ ! -L /dev/disk/by-label/usbkey ]; do
+        sleep 0.1
+    done
+#    echoerr " Found device node"
+
+    # see if the mountpoint exists
+    if [ ! -d ${MOUNTPOINT} ]; then
+#        echoerr " Mount point is not a directory"
+        return 1
+    fi
+
+    # attempt to mount the USB key
+    # if it fails, try with ext3 and then vfat
+    # TODO: is there any better way of detecting filesystem
+    # type?
+    mount -t ext4 /dev/disk/by-label/usbkey ${MOUNTPOINT} 1>&2
+    if [ $? -ne 0 ]; then
+        mount -t ext3 /dev/disk/by-label/usbkey ${MOUNTPOINT} 1>&2
+    fi
+
+    if [ $? -ne 0 ]; then
+    	mount -t vfat /dev/disk/by-label/usbkey ${MOUNTPOINT} 1>&2
+    fi
+
+    if [ $? -ne 0 ]; then
+#        echoerr " Could not mount device"
+        return 1
+    fi
+
+    # extract the key to stdout
+
+    # see if the raw key exists
+    if [ -f "${MOUNTPOINT}/.crypto/${HOSTNAME}.key" ]; then
+        cat "${MOUNTPOINT}/.crypto/${HOSTNAME}.key"
+    else
+
+        prompt="Enter passphrase"
+        if [ -x /bin/plymouth ] && plymouth --ping; then
+            cryptkeyscript="plymouth ask-for-password --prompt"
+            #TODO: confirm it works without this line
+            #cryptkey=$(echo -e "$cryptkey")
+        else
+            cryptkeyscript="/lib/cryptsetup/askpass"
+        fi
+        # fedora technique of preventing console clashes 
+        { flock -s 9;
+            $cryptkeyscript "$prompt" | gpg --homedir ${MOUNTPOINT}/.gnupg \
+                    --passphrase-fd 0 --decrypt \
+                    "${MOUNTPOINT}/.crypto/${HOSTNAME}.key.enc"
+        } 9>/.console.lock
+    fi
+
+    umount $MOUNTPOINT
+
+    /bin/plymouth message --text="Please remove USB key"
+    /bin/plymount unpause-progress
+
+    return 0
+}
+
+###########################
+# MAIN SCRIPT STARTS HERE #
+###########################
+
+# test if we have plymouth
+if [ -x /bin/plymouth ] && plymouth --ping; then
+    PLYMOUTH=1
+fi
+
+# This fixes a bug with powerbooks
+#chvt 1
+
+# GPG uses needs /dev/tty.  It won't work without it
+# TODO: is this ok on fedora?
+mount -o bind /dev/console /dev/tty > /dev/null
+
+# this is where a temporary mountpoint is created
+#MOUNTPOINT=`mktemp -d /tmp/usbkey.XXXXXX`
+MOUNTPOINT="/tmp/lfde_mount"
+
+
+# read in config file
+# TODO: update ubuntu version to use /etc/lfde.conf
+if [ ! -f "/etc/lfde.conf" ]; then
+    echoerr "Could not find config"
+    exit 1
+else
+    . /etc/lfde.conf
+fi
+
+if [ -f /etc/bypass.key ]; then
+    cat /etc/bypass.key
+    # tidy this up
+    umount /dev/tty
+    exit 0
+fi
+
+# on ubuntu feisty and gutsy, this fixes a bug
+# in hardy, udevsettle doesn't exist in the initramfs
+if [ -f /sbin/udevsettle ]; then
+    echoerr "Waiting for devices to settle"
+    /sbin/udevsettle --timeout=30 > /dev/null
+fi
+
+# get the password
+if getpw; then
+    umount /dev/tty
+    exit 0;
+else
+    umount /dev/tty
+    umount $MOUNTPOINT > /dev/null
+    exit 1;
+fi
+

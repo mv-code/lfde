@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="window1">
+    <child>
+      <object class="GtkVBox" id="root_welcome">
+        <property name="visible">True</property>
+        <property name="border_width">3</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="label1">
+            <property name="width_request">600</property>
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="yalign">0</property>
+            <property name="ypad">4</property>
+            <property name="label" translatable="yes">Welcome to the Linux Full Disk Encryption (LFDE) installer.  This program will modify your linux system to boot from your USB drive and introduce strong encryption to protect your system.
+
+For more information on how the software works, please visit &lt;a href="http://lfde.org"&gt;http://lfde.org&lt;/a&gt;</property>
+            <property name="use_markup">True</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label2">
+            <property name="width_request">600</property>
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="yalign">0</property>
+            <property name="ypad">3</property>
+            <property name="label" translatable="yes">&lt;i&gt;&lt;b&gt;Warning:&lt;/b&gt;  This software should be considered &lt;i&gt;alpha&lt;/i&gt; quality at this stage.  It has not been heavily tested and we are looking for success/failure stories so we can move the software into release candidate status and then stable status.
+
+&lt;i&gt;Please do not use this installer on any system that is important to you.  It may fail, it may delete your hard disk, it may eat your cat, it may even trigger international war, so please don't use it on production systems at this stage.&lt;/i&gt;&lt;/i&gt;</property>
+            <property name="use_markup">True</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

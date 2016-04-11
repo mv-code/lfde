@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkWindow" id="window1">
+    <child>
+      <object class="GtkVBox" id="root_debug">
+        <property name="visible">True</property>
+        <property name="border_width">3</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="label1">
+            <property name="width_request">600</property>
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="yalign">0</property>
+            <property name="ypad">4</property>
+            <property name="label" translatable="yes">&lt;b&gt;Anonymous System Information&lt;/b&gt;
+In order to make this software better, we are trying to collect anonymous system information.  If you are happy to participate in this survey, please click the box below.  The details being collected will be displayed to you so you can review the report before it is sent to LFDE.org</property>
+            <property name="use_markup">True</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="chk_send_anon_profile">
+            <property name="label" translatable="yes">Yes, I'd like to send an anonymous system profile to LFDE.org</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label3">
+            <property name="width_request">600</property>
+            <property name="visible">True</property>
+            <property name="xalign">0</property>
+            <property name="yalign">0</property>
+            <property name="ypad">5</property>
+            <property name="label" translatable="yes">&lt;b&gt;Troubleshooting&lt;/b&gt;
+If you are experiencing a problem or want assistance in debugging a failed installation, we highly recommend sending a non-anonymous profile to LFDE.org.  To do this, the installer will create or use an existing lfde.org account.  The system information can be attached to a bug report at your discretion.</property>
+            <property name="use_markup">True</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="chk_send_debug_profile">
+            <property name="label" translatable="yes">I'd like to send my system profile to LFDE.org for debugging purposes</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="root_boot_scheme">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">18</property>
+    <property name="width">77</property>
+    <property name="border">false</property>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">0</property>
+        <property name="height">2</property>
+        <property name="width">70</property>
+        <property name="text">You need to select the way in which you want to protect your encrypted disks.</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">4</property>
+        <property name="height">1</property>
+        <property name="width">7</property>
+        <property name="text">Choice</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="ListBox" id="lb_boot_scheme">
+        <property name="x">0</property>
+        <property name="y">5</property>
+        <property name="height">2</property>
+        <property name="width">20</property>
+        <property name="z_index">100</property>
+        <property name="column_starts">0</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">15</property>
+        <property name="height">2</property>
+        <property name="width">60</property>
+        <property name="text">Read more about the advantages and disadvantages at https://lfde.org/wiki/Boot_Scheme</property>
+      </object>
+    </child>
+
+  </object>
+</interface>

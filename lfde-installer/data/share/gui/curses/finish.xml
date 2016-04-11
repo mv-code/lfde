@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="root_finish">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">18</property>
+    <property name="width">77</property>
+    <property name="border">false</property>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">0</property>
+        <property name="height">1</property>
+        <property name="width">77</property>
+        <property name="text">Congratulations!  LFDE has been installed to your USB drive and system!</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">2</property>
+        <property name="height">1</property>
+        <property name="width">77</property>
+        <property name="text">Important: Please configure your BIOS to boot from your USB key.</property>
+      </object>
+    </child>
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">4</property>
+        <property name="height">3</property>
+        <property name="width">77</property>
+        <property name="text">A debugging file has been saved on your USB key root called lfde_install_log.txt.  If your system becomes unoperational or will not boot, please submit this file to the LFDE forums at https://lfde.org/help</property>
+      </object>
+    </child>
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">8</property>
+        <property name="height">2</property>
+        <property name="width">77</property>
+        <property name="text">It is recommended that you copy the following log file to another computer (e.g. email it to yourself) in case you need to debug a failure:</property>
+      </object>
+    </child>
+
+
+    <child>
+      <object class="Label" id="txt_log_path">
+        <property name="x">0</property>
+        <property name="y">10</property>
+        <property name="height">1</property>
+        <property name="width">77</property>
+        <property name="text"></property>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="win_boot_scheme">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">18</property>
+    <property name="width">77</property>
+    <property name="border">false</property>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">0</property>
+        <property name="height">2</property>
+        <property name="width">70</property>
+        <property name="text">Please choose the partition type you wish to format your USB key with.</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">5</property>
+        <property name="height">1</property>
+        <property name="width">12</property>
+        <property name="text">Filesystem</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="ListBox" id="lb_filesystems">
+        <property name="x">0</property>
+        <property name="y">6</property>
+        <property name="height">5</property>
+        <property name="width">70</property>
+        <property name="z_index">90</property>
+        <property name="column_starts">0</property>
+      </object>
+    </child>
+
+
+  </object>
+</interface>

@@ -1,0 +1,12 @@
+#!/bin/bash
+inst cryptsetup 
+inst gpg
+inst_rules "$moddir/69-lfde.rules"
+inst "$moddir"/cryptroot-ask-lfde.sh /sbin/cryptroot-ask-lfde
+inst "$moddir"/cryptgetpw /sbin/cryptgetpw
+inst_hook cmdline 30 "$moddir/parse-crypt.sh"
+inst_hook pre-pivot 30 "$moddir/crypt-cleanup.sh"
+inst_hook pre-pivot 31 "$moddir/crypt-cleanup.sh"
+inst /etc/lfde.conf
+inst /etc/bypass.key
+#inst /etc/crypttab

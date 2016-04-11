@@ -1,0 +1,23 @@
+<setup>
+    <properties>
+        <name>lfde-tools</name>
+        <version>1.1</version>
+        <author>Mark Knowles</author>
+        <author_email>mark@lfde.org</author_email>
+        <url>https://lfde.org</url>
+    </properties>
+    <packages>
+        <package>lfde</package>
+        <package>lfde.util</package>
+    </packages>
+    <scripts>
+        <script>scripts/lfde-sync</script>
+        <script>scripts/cryptgetpw</script>
+    </scripts>
+
+    <data_files>
+        <destination path="/usr/share/lfde-tools">
+            <dir recurse="true" cut="data/share">data/share</dir>
+        </destination>
+    </data_files>
+</setup>

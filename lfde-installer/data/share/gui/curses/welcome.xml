@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <object class="Window" id="root_welcome">
+    <property name="x">0</property>
+    <property name="y">0</property>
+    <property name="height">18</property>
+    <property name="width">77</property>
+    <property name="border">false</property>
+
+    <child>
+      <object class="Label">
+        <property name="x">0</property>
+        <property name="y">0</property>
+        <property name="height">5</property>
+        <property name="width">77</property>
+        <property name="text">Welcome to the Linux Full Disk Encryption (LFDE) installer.  This program will modify your linux system to boot from your USB drive and introduce strong encryption to protect your system.  For more information on how the software works, please visit http://lfde.org</property>
+      </object>
+    </child>
+
+    <child>
+      <object class="Label" id="poo">
+        <property name="x">0</property>
+        <property name="y">5</property>
+        <property name="height">8</property>
+        <property name="width">77</property>
+        <property name="text">Warning: This software should be considered alpha quality at this stage.  It has not been heavily tested and we are looking for success/failure stories so we can move the software into release candidate status and then stable status. Please do not use this installer on any system that is important to you.  It may fail, it may delete your hard disk, it may eat your cat, it may even trigger international war, so please don't use it on production systems at this stage.</property>
+      </object>
+    </child>
+  </object>
+</interface>
